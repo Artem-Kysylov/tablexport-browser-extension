@@ -9,7 +9,7 @@ import {
 import { parseHtmlTable, tableToTsv } from '@/utils/parse-table';
 import { settingsItem } from '@/utils/storage';
 import { BridgeMessage } from '@/utils/messages';
-import { createExportButton, createBatchExportButton, ExportState } from './button';
+import { createExportButton, createGlobalBatchExportButton, ExportState } from './button';
 
 export default defineContentScript({
   matches: [
@@ -23,6 +23,7 @@ export default defineContentScript({
     let enabled = true;
     let observer: MutationObserver | null = null;
     let scanTimer: ReturnType<typeof setTimeout> | null = null;
+    let globalBatchButton: HTMLButtonElement | null = null;
 
     const scheduleScan = (): void => {
       if (!enabled) return;
@@ -69,14 +70,18 @@ export default defineContentScript({
       setState('success');
     };
 
-    const handleBatchClick = async (
-      tables: HTMLTableElement[],
+    const handleGlobalBatchClick = async (
       setState: (state: ExportState) => void,
     ): Promise<void> => {
       setState('working');
       
+      const allTables = document.querySelectorAll<HTMLTableElement>('table');
+      const validTables = Array.from(allTables).filter(table => 
+        table.isConnected && table.rows.length > 0
+      );
+      
       const tsvBlocks: string[] = [];
-      for (const table of tables) {
+      for (const table of validTables) {
         const parsed = parseHtmlTable(table);
         if (parsed) {
           tsvBlocks.push(tableToTsv(parsed));
@@ -113,34 +118,40 @@ export default defineContentScript({
         onClick: (setState) => handleClick(table, setState),
       });
 
-      // Try to position elegantly relative to the table
+      // Ensure the table has a positioned parent for absolute positioning
       const tableParent = table.parentElement;
       if (tableParent) {
-        // Check if parent already has relative positioning
         const parentComputedStyle = window.getComputedStyle(tableParent);
-        const hasRelativeParent = parentComputedStyle.position === 'relative' || 
-                                  parentComputedStyle.position === 'absolute';
+        const hasPositioning = ['relative', 'absolute', 'fixed', 'sticky'].includes(parentComputedStyle.position);
 
-        if (!hasRelativeParent && tableParent.tagName !== 'BODY' && tableParent.tagName !== 'HTML') {
-          // Wrap table in a positioned container
+        if (!hasPositioning && tableParent.tagName !== 'BODY' && tableParent.tagName !== 'HTML') {
+          // Create a wrapper with relative positioning
           const wrapper = document.createElement('div');
           wrapper.className = 'tablexport-bridge-table-wrapper';
+          wrapper.style.position = 'relative';
+          wrapper.style.display = 'inline-block';
+          wrapper.style.minWidth = '100%';
+          
           tableParent.insertBefore(wrapper, table);
           wrapper.appendChild(table);
-          
-          button.className += ' tablexport-bridge-btn-positioned';
           wrapper.appendChild(button);
         } else {
-          // Insert button right before table with some margin
-          button.style.marginBottom = '8px';
-          button.style.marginLeft = 'auto';
-          button.style.display = 'block';
-          button.style.width = 'fit-content';
-          table.insertAdjacentElement('beforebegin', button);
+          // Parent already has positioning, set it to relative if needed
+          if (!hasPositioning) {
+            tableParent.style.position = 'relative';
+          }
+          tableParent.appendChild(button);
         }
       } else {
-        // Fallback: insert before table
-        table.insertAdjacentElement('beforebegin', button);
+        // Fallback: create wrapper around table
+        const wrapper = document.createElement('div');
+        wrapper.className = 'tablexport-bridge-table-wrapper';
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+        
+        table.parentNode?.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+        wrapper.appendChild(button);
       }
     };
 
@@ -157,81 +168,58 @@ export default defineContentScript({
       document
         .querySelectorAll<HTMLElement>(`[${BATCH_CONTAINER_ATTR}]`)
         .forEach((node) => node.removeAttribute(BATCH_CONTAINER_ATTR));
+      
+      if (globalBatchButton) {
+        globalBatchButton.remove();
+        globalBatchButton = null;
+      }
     };
 
-    const findMessageContainer = (table: HTMLTableElement): HTMLElement | null => {
-      // Try to find a message container that could contain multiple tables
-      // Look for common AI chat message patterns
-      let current = table.parentElement;
-      let depth = 0;
-      const maxDepth = 10;
 
-      while (current && depth < maxDepth) {
-        const tagName = current.tagName.toLowerCase();
-        const classNames = current.className.toLowerCase();
-        
-        // Common patterns for AI chat messages
-        if (
-          classNames.includes('message') ||
-          classNames.includes('response') ||
-          classNames.includes('assistant') ||
-          classNames.includes('ai') ||
-          classNames.includes('chat') ||
-          tagName === 'article' ||
-          (current.getAttribute('role') === 'article') ||
-          (current.querySelector && current.querySelectorAll('table').length > 1)
-        ) {
-          return current;
+    const updateGlobalBatchButton = (tableCount: number): void => {
+      if (tableCount > 1) {
+        if (!globalBatchButton) {
+          globalBatchButton = createGlobalBatchExportButton({
+            onClick: handleGlobalBatchClick,
+            tableCount,
+          });
+          document.body.appendChild(globalBatchButton);
         }
         
-        current = current.parentElement;
-        depth++;
-      }
-      
-      return null;
-    };
-
-    const attachBatchButton = (container: HTMLElement, tables: HTMLTableElement[]): void => {
-      if (container.hasAttribute(BATCH_CONTAINER_ATTR)) return;
-      container.setAttribute(BATCH_CONTAINER_ATTR, 'true');
-
-      const batchButton = createBatchExportButton({
-        onClick: (setState) => handleBatchClick(tables, setState),
-      });
-
-      // Position the batch button at the top-right of the container or before the first table
-      const firstTable = tables[0];
-      if (firstTable) {
-        batchButton.style.float = 'right';
-        batchButton.style.marginBottom = '8px';
-        firstTable.insertAdjacentElement('beforebegin', batchButton);
+        // Update table count in existing button
+        const span = globalBatchButton.querySelector('span');
+        if (span && globalBatchButton.dataset.state === 'idle') {
+          span.textContent = `Export ${tableCount} tables`;
+        }
+        
+        // Show button with animation
+        globalBatchButton.classList.add('visible');
+      } else {
+        // Hide and remove button if 1 or fewer tables
+        if (globalBatchButton) {
+          globalBatchButton.classList.remove('visible');
+          setTimeout(() => {
+            if (globalBatchButton && !globalBatchButton.classList.contains('visible')) {
+              globalBatchButton.remove();
+              globalBatchButton = null;
+            }
+          }, 200);
+        }
       }
     };
 
     const scanTables = (): void => {
       if (!enabled) return;
       const tables = document.querySelectorAll<HTMLTableElement>('table');
+      const validTables = Array.from(tables).filter(table => 
+        table.isConnected && table.rows.length > 0
+      );
       
-      // First, attach individual buttons to all tables
-      tables.forEach(attachButton);
+      // Attach individual buttons to all tables
+      validTables.forEach(attachButton);
       
-      // Then, check for containers with multiple tables for batch export
-      const processedContainers = new Set<HTMLElement>();
-      
-      tables.forEach((table) => {
-        const container = findMessageContainer(table);
-        if (!container || processedContainers.has(container)) return;
-        
-        // Find all tables within this container
-        const containerTables = Array.from(container.querySelectorAll<HTMLTableElement>('table'))
-          .filter(t => t.isConnected && t.rows.length > 0);
-        
-        // Only add batch export if there are 2 or more tables
-        if (containerTables.length > 1) {
-          attachBatchButton(container, containerTables);
-          processedContainers.add(container);
-        }
-      });
+      // Update global batch button based on total table count
+      updateGlobalBatchButton(validTables.length);
     };
 
     const startObserving = (): void => {
