@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand: #1b9358;
+  --color-brand-light: #d2f2e2;
+  --color-brand-dark: #062013;
+}
+
+:root {
+  color-scheme: light;
+  font-family:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 360px;
+  min-height: 400px;
+  background: #ffffff;
+  color: var(--color-brand-dark);
+}
