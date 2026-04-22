@@ -118,40 +118,53 @@ export default defineContentScript({
         onClick: (setState) => handleClick(table, setState),
       });
 
-      // Ensure the table has a positioned parent for absolute positioning
-      const tableParent = table.parentElement;
-      if (tableParent) {
-        const parentComputedStyle = window.getComputedStyle(tableParent);
-        const hasPositioning = ['relative', 'absolute', 'fixed', 'sticky'].includes(parentComputedStyle.position);
-
-        if (!hasPositioning && tableParent.tagName !== 'BODY' && tableParent.tagName !== 'HTML') {
-          // Create a wrapper with relative positioning
-          const wrapper = document.createElement('div');
-          wrapper.className = 'tablexport-bridge-table-wrapper';
-          wrapper.style.position = 'relative';
-          wrapper.style.display = 'inline-block';
-          wrapper.style.minWidth = '100%';
+      // Find the best container for the button
+      const findSuitableContainer = (element: HTMLElement): HTMLElement => {
+        let current = element.parentElement;
+        while (current && current !== document.body) {
+          const style = window.getComputedStyle(current);
           
-          tableParent.insertBefore(wrapper, table);
-          wrapper.appendChild(table);
-          wrapper.appendChild(button);
-        } else {
-          // Parent already has positioning, set it to relative if needed
-          if (!hasPositioning) {
-            tableParent.style.position = 'relative';
+          // Avoid containers that might clip the button
+          if (style.overflow === 'hidden' || style.overflowX === 'hidden') {
+            current = current.parentElement;
+            continue;
           }
-          tableParent.appendChild(button);
+          
+          // Good container candidates
+          if (style.position !== 'static' || 
+              current.tagName === 'DIV' || 
+              current.tagName === 'SECTION' ||
+              current.tagName === 'ARTICLE') {
+            return current;
+          }
+          
+          current = current.parentElement;
         }
-      } else {
-        // Fallback: create wrapper around table
+        return element.parentElement || document.body;
+      };
+
+      const container = findSuitableContainer(table);
+      const containerStyle = window.getComputedStyle(container);
+      const hasPositioning = ['relative', 'absolute', 'fixed', 'sticky'].includes(containerStyle.position);
+
+      if (!hasPositioning && container !== document.body) {
+        // Ensure container has relative positioning
+        container.style.position = 'relative';
+        container.appendChild(button);
+      } else if (container === document.body || containerStyle.overflow === 'hidden') {
+        // Create wrapper around table for better positioning control
         const wrapper = document.createElement('div');
         wrapper.className = 'tablexport-bridge-table-wrapper';
         wrapper.style.position = 'relative';
         wrapper.style.display = 'inline-block';
+        wrapper.style.minWidth = '100%';
+        wrapper.style.overflow = 'visible';
         
         table.parentNode?.insertBefore(wrapper, table);
         wrapper.appendChild(table);
         wrapper.appendChild(button);
+      } else {
+        container.appendChild(button);
       }
     };
 
