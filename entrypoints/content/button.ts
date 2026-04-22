@@ -61,7 +61,7 @@ const STATE_COPY: Record<ExportState, { icon: string; label: string; tooltip: st
 };
 
 const BATCH_STATE_COPY: Record<ExportState, { icon: string; label: string; tooltip: string }> = {
-  idle: { icon: ICON_BATCH_EXPORT, label: 'Export All Tables', tooltip: 'Export all tables on this page' },
+  idle: { icon: ICON_EXPORT, label: 'Export All Tables', tooltip: 'Export all tables on this page' },
   working: { icon: ICON_SPINNER, label: 'Copying tables…', tooltip: 'Copying all tables…' },
   success: { icon: ICON_CHECK, label: 'All copied! Opening TableXport…', tooltip: 'All tables copied! Opening TableXport…' },
   error: { icon: ICON_ERROR, label: 'Export failed — try again', tooltip: 'Export failed — try again' },
@@ -219,18 +219,11 @@ const ensureStylesheet = (): void => {
     .tablexport-bridge-table-container {
       position: relative;
     }
-    .tablexport-bridge-button-cell {
-      padding: 4px !important;
-      border: none !important;
-      background: transparent !important;
-      width: 1% !important;
-      vertical-align: top !important;
-    }
-    .tablexport-bridge-button-wrapper {
+    .tablexport-bridge-table-header {
       display: flex !important;
-      align-items: flex-start !important;
-      gap: 8px !important;
-      margin-bottom: 4px !important;
+      justify-content: flex-start !important;
+      margin-bottom: 8px !important;
+      padding: 0 !important;
     }
     .tablexport-bridge-global-batch-btn {
       /* Reset potential platform conflicts */

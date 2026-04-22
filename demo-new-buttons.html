@@ -179,8 +179,8 @@
             <div class="new-style">
                 <h3>✅ Новый подход <span class="status new">Решение</span></h3>
                 <ul>
-                    <li>Прямоугольные кнопки внутри таблицы</li>
-                    <li>Встраивание в структуру</li>
+                    <li>Прямоугольные кнопки перед таблицей</li>
+                    <li>Не ломает структуру данных</li>
                     <li>Никогда не обрезается</li>
                     <li>Иконка + текст</li>
                 </ul>
@@ -211,21 +211,23 @@
             <span>Export 3 tables</span>
         </button>
 
-        <h2>📊 Пример встроенной кнопки в таблице</h2>
+        <h2>📊 Пример кнопки перед таблицей (исправлено)</h2>
+        
+        <!-- Кнопка экспорта перед таблицей -->
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 8px;">
+            <button class="demo-btn" onclick="alert('Экспорт таблицы контактов!')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3v12" />
+                    <path d="m7 10 5-5 5 5" />
+                    <path d="M5 21h14" />
+                </svg>
+                <span>Export this table</span>
+            </button>
+        </div>
         
         <table>
             <thead>
                 <tr>
-                    <th class="button-cell">
-                        <button class="demo-btn" onclick="alert('Экспорт таблицы контактов!')">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 3v12" />
-                                <path d="m7 10 5-5 5 5" />
-                                <path d="M5 21h14" />
-                            </svg>
-                            <span>Export this table</span>
-                        </button>
-                    </th>
                     <th>Имя</th>
                     <th>Email</th>
                     <th>Телефон</th>
@@ -234,21 +236,18 @@
             </thead>
             <tbody>
                 <tr>
-                    <td></td>
                     <td>Иван Иванов</td>
                     <td>ivan@example.com</td>
                     <td>+7 999 123 45 67</td>
                     <td>Москва</td>
                 </tr>
                 <tr>
-                    <td></td>
                     <td>Анна Петрова</td>
                     <td>anna@example.com</td>
                     <td>+7 999 765 43 21</td>
                     <td>Санкт-Петербург</td>
                 </tr>
                 <tr>
-                    <td></td>
                     <td>Сергей Сидоров</td>
                     <td>sergey@example.com</td>
                     <td>+7 999 555 11 22</td>
@@ -257,13 +256,15 @@
             </tbody>
         </table>
 
-        <h2>🎯 Ключевые улучшения</h2>
+        <h2>🎯 Ключевые улучшения (v2)</h2>
         <ul>
-            <li><strong>Надёжность:</strong> Кнопка всегда видна, встроена в таблицу</li>
-            <li><strong>Консистентность:</strong> Дизайн соответствует popup расширения (border-radius: 8px)</li>
-            <li><strong>UX:</strong> Понятный текст вместо только иконки</li>
-            <li><strong>Hover эффект:</strong> Зелёная тень при наведении</li>
-            <li><strong>Кроссплатформенность:</strong> Работает одинаково на всех AI чатах</li>
+            <li><strong>🔧 Исправленная иконка:</strong> Batch кнопка использует ту же иконку что и одиночная</li>
+            <li><strong>📊 Сохранение структуры:</strong> Кнопка рендерится ПЕРЕД таблицей, не ломает данные</li>
+            <li><strong>🛡️ Надёжность:</strong> Кнопка всегда видна, никогда не обрезается</li>
+            <li><strong>🎨 Консистентность:</strong> Дизайн соответствует popup расширения (border-radius: 8px)</li>
+            <li><strong>💡 UX:</strong> Понятный текст вместо только иконки</li>
+            <li><strong>✨ Hover эффект:</strong> Зелёная тень при наведении</li>
+            <li><strong>🌐 Кроссплатформенность:</strong> Работает одинаково на всех AI чатах</li>
         </ul>
 
         <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1B9358;">

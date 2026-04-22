@@ -118,59 +118,24 @@ export default defineContentScript({
         onClick: (setState) => handleClick(table, setState),
       });
 
-      // Insert button directly into the table - much more reliable approach
-      const insertButtonIntoTable = (): void => {
-        // Try to find the first row (header or data)
-        const firstRow = table.querySelector('tr');
-        if (!firstRow) return;
+      // Create a wrapper for button + table to avoid breaking table layout
+      const createButtonContainer = (): void => {
+        // Create container div for button
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'tablexport-bridge-table-header';
+        buttonContainer.style.cssText = `
+          display: flex !important;
+          justify-content: flex-start !important;
+          margin-bottom: 8px !important;
+          padding: 0 !important;
+        `;
+        buttonContainer.appendChild(button);
 
-        // Create a cell to contain the button if we're in thead, or modify first cell if tbody
-        const headerSection = table.querySelector('thead');
-        const isInHeader = headerSection && headerSection.contains(firstRow);
-        
-        if (isInHeader) {
-          // Insert button in a new header cell at the beginning
-          const buttonCell = document.createElement('th');
-          buttonCell.className = 'tablexport-bridge-button-cell';
-          buttonCell.style.cssText = `
-            padding: 4px !important;
-            border: none !important;
-            background: transparent !important;
-            width: 1% !important;
-            vertical-align: top !important;
-          `;
-          buttonCell.appendChild(button);
-          firstRow.insertBefore(buttonCell, firstRow.firstChild);
-        } else {
-          // Insert in the first data cell
-          const firstCell = firstRow.querySelector('td, th');
-          if (firstCell) {
-            // Create a wrapper div inside the first cell
-            const buttonWrapper = document.createElement('div');
-            buttonWrapper.className = 'tablexport-bridge-button-wrapper';
-            buttonWrapper.style.cssText = `
-              display: flex !important;
-              align-items: flex-start !important;
-              gap: 8px !important;
-              margin-bottom: 4px !important;
-            `;
-            
-            // Move existing content to a content wrapper
-            const contentWrapper = document.createElement('div');
-            contentWrapper.style.cssText = 'flex: 1 !important;';
-            while (firstCell.firstChild) {
-              contentWrapper.appendChild(firstCell.firstChild);
-            }
-            
-            // Add button and content back to cell
-            buttonWrapper.appendChild(button);
-            buttonWrapper.appendChild(contentWrapper);
-            firstCell.appendChild(buttonWrapper);
-          }
-        }
+        // Insert button container before the table
+        table.parentNode?.insertBefore(buttonContainer, table);
       };
 
-      insertButtonIntoTable();
+      createButtonContainer();
     };
 
     const removeAllButtons = (): void => {
