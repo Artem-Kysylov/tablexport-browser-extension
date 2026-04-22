@@ -53,11 +53,11 @@ const ICON_ERROR = `
   </svg>
 `;
 
-const STATE_COPY: Record<ExportState, { icon: string; label: string; tooltip: string }> = {
-  idle: { icon: ICON_EXPORT, label: 'Export to TableXport', tooltip: 'Export to TableXport' },
-  working: { icon: ICON_SPINNER, label: 'Copying table…', tooltip: 'Copying table…' },
-  success: { icon: ICON_CHECK, label: 'Copied! Opening TableXport…', tooltip: 'Copied! Opening TableXport…' },
-  error: { icon: ICON_ERROR, label: 'Export failed — try again', tooltip: 'Export failed — try again' },
+const STATE_COPY: Record<ExportState, { icon: string; label: string; tooltip: string; buttonText: string }> = {
+  idle: { icon: ICON_EXPORT, label: 'Export to TableXport', tooltip: 'Export to TableXport', buttonText: 'Export this table' },
+  working: { icon: ICON_SPINNER, label: 'Copying table…', tooltip: 'Copying table…', buttonText: 'Exporting…' },
+  success: { icon: ICON_CHECK, label: 'Copied! Opening TableXport…', tooltip: 'Copied! Opening TableXport…', buttonText: 'Success!' },
+  error: { icon: ICON_ERROR, label: 'Export failed — try again', tooltip: 'Export failed — try again', buttonText: 'Try again' },
 };
 
 const BATCH_STATE_COPY: Record<ExportState, { icon: string; label: string; tooltip: string }> = {
@@ -160,16 +160,13 @@ const ensureStylesheet = (): void => {
       -webkit-appearance: none !important;
       -moz-appearance: none !important;
       box-sizing: border-box !important;
-      display: flex !important;
+      display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      width: 45px !important;
-      height: 45px !important;
-      min-width: 45px !important;
-      min-height: 45px !important;
-      max-width: 45px !important;
-      max-height: 45px !important;
-      border-radius: 50% !important;
+      gap: 6px !important;
+      height: 32px !important;
+      padding: 0 12px !important;
+      border-radius: 8px !important;
       background-color: ${BRAND.primary} !important;
       color: ${BRAND.white} !important;
       cursor: pointer !important;
@@ -177,22 +174,22 @@ const ensureStylesheet = (): void => {
       transition: all 200ms ease !important;
       border: none !important;
       user-select: none !important;
-      position: absolute !important;
-      top: -12px !important;
-      left: -12px !important;
-      z-index: 2147483647 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      font-family: inherit !important;
-      font-size: 16px !important;
-      line-height: 1 !important;
+      position: relative !important;
+      z-index: 1000 !important;
+      margin: 4px !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      line-height: 1.2 !important;
       text-align: center !important;
-      vertical-align: baseline !important;
+      vertical-align: middle !important;
       outline: none !important;
+      white-space: nowrap !important;
     }
     .tablexport-bridge-btn:hover {
-      transform: scale(1.05) !important;
-      box-shadow: 0 6px 20px rgba(27, 147, 88, 0.4) !important;
+      background-color: ${BRAND.primary} !important;
+      box-shadow: 0 6px 16px rgba(27, 147, 88, 0.6) !important;
+      transform: translateY(-1px) !important;
     }
     .tablexport-bridge-btn:focus-visible {
       outline: 2px solid ${BRAND.primary};
@@ -213,66 +210,27 @@ const ensureStylesheet = (): void => {
       opacity: 0.9;
     }
     .tablexport-bridge-btn svg {
-      width: 20px !important;
-      height: 20px !important;
+      width: 14px !important;
+      height: 14px !important;
       stroke: currentColor !important;
       fill: none !important;
+      flex-shrink: 0 !important;
     }
     .tablexport-bridge-table-container {
       position: relative;
     }
-    .tablexport-bridge-table-container {
-      position: relative;
-    }
-    .tablexport-bridge-table-wrapper {
-      position: relative !important;
-      display: inline-block !important;
-      overflow: visible !important;
-      min-width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    .tablexport-bridge-tooltip {
-      position: absolute !important;
-      background-color: #000000 !important;
-      color: #ffffff !important;
-      font-size: 12px !important;
-      font-weight: 500 !important;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
-      line-height: 1.3 !important;
-      padding: 6px 10px !important;
-      border-radius: 6px !important;
-      white-space: nowrap !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-      transform: translateX(-50%) translateY(-5px) !important;
-      transition: opacity 200ms ease, visibility 200ms ease, transform 200ms ease !important;
-      z-index: 2147483647 !important;
-      pointer-events: none !important;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-      margin: 0 !important;
+    .tablexport-bridge-button-cell {
+      padding: 4px !important;
       border: none !important;
-      text-align: center !important;
-      letter-spacing: 0.01em !important;
-      bottom: calc(100% + 8px) !important;
-      left: 50% !important;
+      background: transparent !important;
+      width: 1% !important;
+      vertical-align: top !important;
     }
-    .tablexport-bridge-tooltip.visible {
-      opacity: 1 !important;
-      visibility: visible !important;
-      transform: translateX(-50%) translateY(0) !important;
-    }
-    .tablexport-bridge-tooltip::before {
-      content: '' !important;
-      position: absolute !important;
-      top: 100% !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      width: 0 !important;
-      height: 0 !important;
-      border-left: 6px solid transparent !important;
-      border-right: 6px solid transparent !important;
-      border-top: 6px solid #000000 !important;
+    .tablexport-bridge-button-wrapper {
+      display: flex !important;
+      align-items: flex-start !important;
+      gap: 8px !important;
+      margin-bottom: 4px !important;
     }
     .tablexport-bridge-global-batch-btn {
       /* Reset potential platform conflicts */
@@ -291,7 +249,7 @@ const ensureStylesheet = (): void => {
       background-color: ${BRAND.primary} !important;
       color: ${BRAND.white} !important;
       border: none !important;
-      border-radius: 24px !important;
+      border-radius: 8px !important;
       font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
       font-size: 14px !important;
       font-weight: 600 !important;
@@ -345,82 +303,23 @@ const ensureStylesheet = (): void => {
   document.head.appendChild(style);
 };
 
-const createTooltip = (text: string): HTMLDivElement => {
-  const tooltip = document.createElement('div');
-  tooltip.className = 'tablexport-bridge-tooltip';
-  tooltip.textContent = text;
-  return tooltip;
-};
-
-const positionTooltip = (button: HTMLButtonElement, tooltip: HTMLDivElement): void => {
-  // Position tooltip above button with proper gap
-  tooltip.style.bottom = 'calc(100% + 8px)';
-  tooltip.style.left = '50%';
-  tooltip.style.transform = 'translateX(-50%)';
-  tooltip.style.marginBottom = '0px';
-};
 
 const renderState = (button: HTMLButtonElement, state: ExportState, isBatch = false): void => {
   const stateCopy = isBatch ? BATCH_STATE_COPY : STATE_COPY;
-  const { icon, label, tooltip } = stateCopy[state];
+  const { icon, label, buttonText } = stateCopy[state];
   button.dataset.state = state;
   button.setAttribute('aria-label', label);
   button.disabled = state === 'working';
-  
-  const buttonId = button.getAttribute('data-button-id');
-  
-  // Remove existing tooltip first
-  const existingTooltip = button.parentElement?.querySelector('.tablexport-bridge-tooltip') ||
-                         document.body.querySelector(`.tablexport-bridge-tooltip[data-button-id="${buttonId}"]`);
-  if (existingTooltip) {
-    existingTooltip.remove();
-  }
   
   if (isBatch) {
     // For batch buttons, include both icon and text
     button.innerHTML = `${icon}<span>${label}</span>`;
   } else {
-    // For single export buttons, only show icon
-    button.innerHTML = icon;
-    // Add tooltip to button's parent wrapper for single buttons
-    const tooltipElement = createTooltip(tooltip);
-    tooltipElement.setAttribute('data-button-id', buttonId || '');
-    const parent = button.parentElement;
-    if (parent) {
-      parent.appendChild(tooltipElement);
-      positionTooltip(button, tooltipElement);
-    }
+    // For single export buttons, show icon and text
+    button.innerHTML = `${icon}<span>${buttonText || label}</span>`;
   }
 };
 
-const setupTooltipEvents = (button: HTMLButtonElement): void => {
-  let hideTimeout: ReturnType<typeof setTimeout> | null = null;
-  
-  button.addEventListener('mouseenter', () => {
-    if (hideTimeout) {
-      clearTimeout(hideTimeout);
-      hideTimeout = null;
-    }
-    
-    // Look for tooltip in parent container or body (for global batch buttons)
-    const tooltip = button.parentElement?.querySelector('.tablexport-bridge-tooltip') ||
-                   document.body.querySelector(`.tablexport-bridge-tooltip[data-button-id="${button.getAttribute('data-button-id')}"]`);
-    if (tooltip) {
-      tooltip.classList.add('visible');
-    }
-  });
-
-  button.addEventListener('mouseleave', () => {
-    // Look for tooltip in parent container or body (for global batch buttons)
-    const tooltip = button.parentElement?.querySelector('.tablexport-bridge-tooltip') ||
-                   document.body.querySelector(`.tablexport-bridge-tooltip[data-button-id="${button.getAttribute('data-button-id')}"]`);
-    if (tooltip) {
-      hideTimeout = setTimeout(() => {
-        tooltip.classList.remove('visible');
-      }, 100);
-    }
-  });
-};
 
 export const createExportButton = ({
   onClick,
@@ -432,12 +331,7 @@ export const createExportButton = ({
   button.className = 'tablexport-bridge-btn';
   button.setAttribute(EXPORT_BUTTON_ATTR, 'true');
   
-  // Add unique ID for tooltip tracking
-  const buttonId = `btn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  button.setAttribute('data-button-id', buttonId);
-  
   renderState(button, 'idle');
-  setupTooltipEvents(button);
 
   const setState = (state: ExportState): void => {
     renderState(button, state);
@@ -503,50 +397,19 @@ export const createGlobalBatchExportButton = ({
   button.className = 'tablexport-bridge-global-batch-btn';
   button.setAttribute(BATCH_EXPORT_BUTTON_ATTR, 'true');
   
-  // Add unique ID for tooltip tracking
-  const buttonId = `batch-btn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  button.setAttribute('data-button-id', buttonId);
-  
   // Custom render for global button with table count
   const renderGlobalState = (state: ExportState): void => {
     const stateCopy = BATCH_STATE_COPY[state];
-    const { icon, label, tooltip } = stateCopy;
+    const { icon, label } = stateCopy;
     button.dataset.state = state;
     button.setAttribute('aria-label', `${label} (${tableCount} tables)`);
     button.disabled = state === 'working';
     
     const countText = state === 'idle' ? `${tableCount} tables` : label;
     button.innerHTML = `${icon}<span>Export ${countText}</span>`;
-    
-    // Handle tooltip for global batch button
-    const existingTooltip = document.body.querySelector(`.tablexport-bridge-tooltip[data-button-id="${buttonId}"]`);
-    if (existingTooltip) {
-      existingTooltip.remove();
-    }
-    
-    const tooltipElement = createTooltip(`${tooltip} (${tableCount} tables)`);
-    tooltipElement.setAttribute('data-button-id', buttonId);
-    document.body.appendChild(tooltipElement);
-    
-    // Position tooltip relative to button
-    const positionGlobalTooltip = () => {
-      const buttonRect = button.getBoundingClientRect();
-      tooltipElement.style.position = 'fixed';
-      tooltipElement.style.bottom = `${window.innerHeight - buttonRect.top + 8}px`;
-      tooltipElement.style.left = `${buttonRect.left + buttonRect.width / 2}px`;
-      tooltipElement.style.transform = 'translateX(-50%)';
-    };
-    
-    // Position now and on scroll/resize
-    positionGlobalTooltip();
-    window.addEventListener('scroll', positionGlobalTooltip, { passive: true });
-    window.addEventListener('resize', positionGlobalTooltip, { passive: true });
   };
 
   renderGlobalState('idle');
-  
-  // Setup tooltip events for global batch button
-  setupTooltipEvents(button);
 
   const setState = (state: ExportState): void => {
     renderGlobalState(state);

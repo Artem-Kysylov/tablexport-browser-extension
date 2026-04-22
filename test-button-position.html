@@ -218,8 +218,9 @@
     <script>
         // Simulate content script behavior
         console.log('Test page loaded. Load your extension to see button positioning.');
-        console.log('Expected: Green circular export buttons should appear at top-left of each table');
-        console.log('Buttons should NOT be clipped by container overflow settings');
+        console.log('Expected: Green rectangular "Export this table" buttons should appear INSIDE each table');
+        console.log('Buttons should be embedded in the first cell/row and never clipped');
+        console.log('New approach: Inline buttons with text instead of absolute positioning');
     </script>
 </body>
 </html>

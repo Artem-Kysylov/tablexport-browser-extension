@@ -118,70 +118,59 @@ export default defineContentScript({
         onClick: (setState) => handleClick(table, setState),
       });
 
-      // Find the best container for the button - improved logic from working version
-      const findSuitableContainer = (element: HTMLElement): HTMLElement => {
-        let current = element.parentElement;
-        while (current && current !== document.body) {
-          const style = window.getComputedStyle(current);
-          
-          // Avoid containers that might clip the button
-          if (style.overflow === 'hidden' || style.overflowX === 'hidden') {
-            current = current.parentElement;
-            continue;
+      // Insert button directly into the table - much more reliable approach
+      const insertButtonIntoTable = (): void => {
+        // Try to find the first row (header or data)
+        const firstRow = table.querySelector('tr');
+        if (!firstRow) return;
+
+        // Create a cell to contain the button if we're in thead, or modify first cell if tbody
+        const headerSection = table.querySelector('thead');
+        const isInHeader = headerSection && headerSection.contains(firstRow);
+        
+        if (isInHeader) {
+          // Insert button in a new header cell at the beginning
+          const buttonCell = document.createElement('th');
+          buttonCell.className = 'tablexport-bridge-button-cell';
+          buttonCell.style.cssText = `
+            padding: 4px !important;
+            border: none !important;
+            background: transparent !important;
+            width: 1% !important;
+            vertical-align: top !important;
+          `;
+          buttonCell.appendChild(button);
+          firstRow.insertBefore(buttonCell, firstRow.firstChild);
+        } else {
+          // Insert in the first data cell
+          const firstCell = firstRow.querySelector('td, th');
+          if (firstCell) {
+            // Create a wrapper div inside the first cell
+            const buttonWrapper = document.createElement('div');
+            buttonWrapper.className = 'tablexport-bridge-button-wrapper';
+            buttonWrapper.style.cssText = `
+              display: flex !important;
+              align-items: flex-start !important;
+              gap: 8px !important;
+              margin-bottom: 4px !important;
+            `;
+            
+            // Move existing content to a content wrapper
+            const contentWrapper = document.createElement('div');
+            contentWrapper.style.cssText = 'flex: 1 !important;';
+            while (firstCell.firstChild) {
+              contentWrapper.appendChild(firstCell.firstChild);
+            }
+            
+            // Add button and content back to cell
+            buttonWrapper.appendChild(button);
+            buttonWrapper.appendChild(contentWrapper);
+            firstCell.appendChild(buttonWrapper);
           }
-          
-          // Good container candidates
-          if (style.position !== 'static' || 
-              current.tagName === 'DIV' || 
-              current.tagName === 'SECTION' ||
-              current.tagName === 'ARTICLE') {
-            return current;
-          }
-          
-          current = current.parentElement;
         }
-        return element.parentElement || document.body;
       };
 
-      const container = findSuitableContainer(table);
-      const containerStyle = window.getComputedStyle(container);
-      const hasPositioning = ['relative', 'absolute', 'fixed', 'sticky'].includes(containerStyle.position);
-
-      if (!hasPositioning && container !== document.body) {
-        // Ensure container has relative positioning and visible overflow
-        container.style.position = 'relative';
-        // Force visible overflow to prevent button clipping
-        if (containerStyle.overflow === 'hidden' || containerStyle.overflowX === 'hidden') {
-          container.style.overflow = 'visible';
-        }
-        container.appendChild(button);
-      } else if (container === document.body || containerStyle.overflow === 'hidden') {
-        // Create wrapper around table for better positioning control
-        const wrapper = document.createElement('div');
-        wrapper.className = 'tablexport-bridge-table-wrapper';
-        wrapper.style.cssText = `
-          position: relative !important;
-          display: inline-block !important;
-          min-width: 100% !important;
-          overflow: visible !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          box-sizing: border-box !important;
-        `;
-        
-        table.parentNode?.insertBefore(wrapper, table);
-        wrapper.appendChild(table);
-        wrapper.appendChild(button);
-      } else {
-        // Even for good containers, ensure they won't clip the button
-        if (containerStyle.overflow === 'hidden' || containerStyle.overflowX === 'hidden') {
-          container.style.overflow = 'visible';
-        }
-        if (!hasPositioning) {
-          container.style.position = 'relative';
-        }
-        container.appendChild(button);
-      }
+      insertButtonIntoTable();
     };
 
     const removeAllButtons = (): void => {
