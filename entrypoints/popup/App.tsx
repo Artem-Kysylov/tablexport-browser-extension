@@ -52,7 +52,7 @@ const App = () => {
           <button
             type="button"
             onClick={openDashboard}
-            className="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-brand px-4 py-3 text-[13px] font-bold text-white shadow-[0_6px_16px_-6px_rgba(27,147,88,0.8)] transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+            className="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-brand px-4 py-3 text-[13px] font-bold text-white shadow-none transition-all duration-200 ease-out hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(27,147,88,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             Go to Dashboard
             {ExternalArrow}

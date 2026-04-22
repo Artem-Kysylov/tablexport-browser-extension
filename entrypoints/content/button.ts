@@ -298,17 +298,16 @@ const ensureStylesheet = (): void => {
 
 
 const renderState = (button: HTMLButtonElement, state: ExportState, isBatch = false): void => {
-  const stateCopy = isBatch ? BATCH_STATE_COPY : STATE_COPY;
-  const { icon, label, buttonText } = stateCopy[state];
   button.dataset.state = state;
-  button.setAttribute('aria-label', label);
   button.disabled = state === 'working';
-  
+
   if (isBatch) {
-    // For batch buttons, include both icon and text
+    const { icon, label } = BATCH_STATE_COPY[state];
+    button.setAttribute('aria-label', label);
     button.innerHTML = `${icon}<span>${label}</span>`;
   } else {
-    // For single export buttons, show icon and text
+    const { icon, label, buttonText } = STATE_COPY[state];
+    button.setAttribute('aria-label', label);
     button.innerHTML = `${icon}<span>${buttonText || label}</span>`;
   }
 };
