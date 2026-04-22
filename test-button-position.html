@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Button Positioning</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .test-section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        /* Simulate different AI chat platform containers */
+        .chatgpt-style {
+            background: #f7f7f8;
+            overflow-x: auto; /* This often causes clipping */
+            padding: 16px;
+        }
+        
+        .claude-style {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            overflow: hidden; /* This might clip buttons */
+        }
+        
+        .gemini-style {
+            background: #fafafa;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .deepseek-style {
+            background: #1a1a1a;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        .deepseek-style th {
+            background-color: #333;
+            color: white;
+        }
+        
+        .deepseek-style td {
+            border-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Button Positioning for AI Chat Platforms</h1>
+    <p>This page simulates different AI chat platform styles to test button positioning.</p>
+    
+    <div class="test-section">
+        <h3>ChatGPT Style (overflow-x: auto)</h3>
+        <div class="chatgpt-style">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Registration Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>U_001</td>
+                        <td>user_ivan</td>
+                        <td>ivan.j@example.com</td>
+                        <td>10.05.2023</td>
+                    </tr>
+                    <tr>
+                        <td>U_002</td>
+                        <td>cool_kate</td>
+                        <td>kate_22@example.com</td>
+                        <td>12.01.2024</td>
+                    </tr>
+                    <tr>
+                        <td>U_003</td>
+                        <td>petrov_p</td>
+                        <td>pavel.p@example.com</td>
+                        <td>25.07.2022</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Claude Style (overflow: hidden)</h3>
+        <div class="claude-style">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>City</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John Smith</td>
+                        <td>j.smith@gmail.com</td>
+                        <td>+1-555-0123</td>
+                        <td>New York</td>
+                    </tr>
+                    <tr>
+                        <td>Jane Doe</td>
+                        <td>jane.d@example.com</td>
+                        <td>+1-555-0456</td>
+                        <td>Los Angeles</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Gemini Style (normal container)</h3>
+        <div class="gemini-style">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Laptop</td>
+                        <td>$999</td>
+                        <td>15</td>
+                        <td>Electronics</td>
+                    </tr>
+                    <tr>
+                        <td>Mouse</td>
+                        <td>$25</td>
+                        <td>50</td>
+                        <td>Accessories</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>DeepSeek Style (dark theme with overflow-x: auto)</h3>
+        <div class="deepseek-style">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Task</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Fix login bug</td>
+                        <td>In Progress</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Update documentation</td>
+                        <td>Pending</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Code review</td>
+                        <td>Complete</td>
+                        <td>Low</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Simulate content script behavior
+        console.log('Test page loaded. Load your extension to see button positioning.');
+        console.log('Expected: Green circular export buttons should appear at top-left of each table');
+        console.log('Buttons should NOT be clipped by container overflow settings');
+    </script>
+</body>
+</html>

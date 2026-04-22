@@ -118,7 +118,7 @@ export default defineContentScript({
         onClick: (setState) => handleClick(table, setState),
       });
 
-      // Find the best container for the button
+      // Find the best container for the button - improved logic from working version
       const findSuitableContainer = (element: HTMLElement): HTMLElement => {
         let current = element.parentElement;
         while (current && current !== document.body) {
@@ -148,22 +148,38 @@ export default defineContentScript({
       const hasPositioning = ['relative', 'absolute', 'fixed', 'sticky'].includes(containerStyle.position);
 
       if (!hasPositioning && container !== document.body) {
-        // Ensure container has relative positioning
+        // Ensure container has relative positioning and visible overflow
         container.style.position = 'relative';
+        // Force visible overflow to prevent button clipping
+        if (containerStyle.overflow === 'hidden' || containerStyle.overflowX === 'hidden') {
+          container.style.overflow = 'visible';
+        }
         container.appendChild(button);
       } else if (container === document.body || containerStyle.overflow === 'hidden') {
         // Create wrapper around table for better positioning control
         const wrapper = document.createElement('div');
         wrapper.className = 'tablexport-bridge-table-wrapper';
-        wrapper.style.position = 'relative';
-        wrapper.style.display = 'inline-block';
-        wrapper.style.minWidth = '100%';
-        wrapper.style.overflow = 'visible';
+        wrapper.style.cssText = `
+          position: relative !important;
+          display: inline-block !important;
+          min-width: 100% !important;
+          overflow: visible !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          box-sizing: border-box !important;
+        `;
         
         table.parentNode?.insertBefore(wrapper, table);
         wrapper.appendChild(table);
         wrapper.appendChild(button);
       } else {
+        // Even for good containers, ensure they won't clip the button
+        if (containerStyle.overflow === 'hidden' || containerStyle.overflowX === 'hidden') {
+          container.style.overflow = 'visible';
+        }
+        if (!hasPositioning) {
+          container.style.position = 'relative';
+        }
         container.appendChild(button);
       }
     };

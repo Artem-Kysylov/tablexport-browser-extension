@@ -221,11 +221,16 @@ const ensureStylesheet = (): void => {
     .tablexport-bridge-table-container {
       position: relative;
     }
+    .tablexport-bridge-table-container {
+      position: relative;
+    }
     .tablexport-bridge-table-wrapper {
       position: relative !important;
       display: inline-block !important;
       overflow: visible !important;
       min-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
     .tablexport-bridge-tooltip {
       position: absolute !important;
