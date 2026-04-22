@@ -7,7 +7,11 @@ import {
   BATCH_CONTAINER_ATTR,
 } from '@/utils/constants';
 import { parseHtmlTable, tableToTsv } from '@/utils/parse-table';
-import { settingsItem } from '@/utils/storage';
+import {
+  settingsItem,
+  SETTINGS_STORAGE_LOCAL_KEY,
+  type BridgeSettings,
+} from '@/utils/storage';
 import { BridgeMessage } from '@/utils/messages';
 import { createExportButton, createGlobalBatchExportButton, ExportState } from './button';
 
@@ -140,6 +144,9 @@ export default defineContentScript({
 
     const removeAllButtons = (): void => {
       document
+        .querySelectorAll<HTMLElement>('.tablexport-bridge-table-header')
+        .forEach((node) => node.remove());
+      document
         .querySelectorAll<HTMLElement>(`[${EXPORT_BUTTON_ATTR}]`)
         .forEach((node) => node.remove());
       document
@@ -151,7 +158,7 @@ export default defineContentScript({
       document
         .querySelectorAll<HTMLElement>(`[${BATCH_CONTAINER_ATTR}]`)
         .forEach((node) => node.removeAttribute(BATCH_CONTAINER_ATTR));
-      
+
       if (globalBatchButton) {
         globalBatchButton.remove();
         globalBatchButton = null;
@@ -234,12 +241,26 @@ export default defineContentScript({
       }
     };
 
+    const readInjectEnabled = (value: unknown): boolean => {
+      if (value && typeof value === 'object' && 'injectButtons' in value) {
+        return Boolean((value as BridgeSettings).injectButtons);
+      }
+      return true;
+    };
+
     void settingsItem.getValue().then((settings) => {
       applyEnabled(settings.injectButtons);
     });
 
     settingsItem.watch((next) => {
-      applyEnabled(next?.injectButtons ?? true);
+      applyEnabled(next.injectButtons);
+    });
+
+    browser.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'local') return;
+      const change = changes[SETTINGS_STORAGE_LOCAL_KEY];
+      if (change == null) return;
+      applyEnabled(readInjectEnabled(change.newValue));
     });
   },
 });

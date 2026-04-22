@@ -1,6 +1,5 @@
 import { DASHBOARD_URL } from '@/utils/constants';
 import { Logo } from './components/Logo';
-import { SocialLinks } from './components/SocialLinks';
 import { Toggle } from './components/Toggle';
 import { useSettings } from './hooks/useSettings';
 
@@ -80,9 +79,8 @@ const App = () => {
 
       <footer className="mt-auto flex items-center justify-between border-t border-brand-light/80 px-5 py-3">
         <span className="text-[11px] text-brand-dark/60">
-          v0.1.0 · Made with care
+          v1.0.0 · Made with care
         </span>
-        <SocialLinks />
       </footer>
     </div>
   );

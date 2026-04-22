@@ -6,6 +6,9 @@ export interface BridgeSettings {
 
 const SETTINGS_KEY = 'local:tablexport-bridge-settings' as const;
 
+/** Key as stored in `browser.storage.local` (suffix after `local:`). */
+export const SETTINGS_STORAGE_LOCAL_KEY = 'tablexport-bridge-settings' as const;
+
 const DEFAULT_SETTINGS: BridgeSettings = {
   injectButtons: true,
 };
