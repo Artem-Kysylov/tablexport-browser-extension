@@ -23,16 +23,6 @@ const ICON_EXPORT = `
   </svg>
 `;
 
-const ICON_BATCH_EXPORT = `
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M12 3v12" />
-    <path d="m7 10 5-5 5 5" />
-    <path d="M5 21h14" />
-    <path d="M14 3h4" />
-    <path d="M18 3v4" />
-  </svg>
-`;
-
 const ICON_SPINNER = `
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="animation: tablexport-bridge-spin 0.9s linear infinite;" aria-hidden="true">
     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
