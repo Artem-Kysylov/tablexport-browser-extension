@@ -32,22 +32,22 @@ const LinkedInIcon = (
 
 const LINKS: SocialLink[] = [
   {
-    href: 'https://twitter.com/tablexport',
-    label: 'Twitter',
+    href: 'https://x.com/tabXport',
+    label: 'TableXport on X',
     icon: TwitterIcon,
   },
   {
-    href: 'https://www.linkedin.com/company/tablexport',
-    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/artem-k-3392b3366/',
+    label: 'LinkedIn profile',
     icon: LinkedInIcon,
   },
 ];
 
 export const SocialLinks = () => (
-  <div className="flex items-center gap-1.5">
+  <div className="flex shrink-0 items-center gap-1.5">
     {LINKS.map((link) => (
       <a
-        key={link.label}
+        key={link.href}
         href={link.href}
         target="_blank"
         rel="noreferrer noopener"

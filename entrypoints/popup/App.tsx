@@ -1,5 +1,6 @@
 import { DASHBOARD_URL } from '@/utils/constants';
 import { Logo } from './components/Logo';
+import { SocialLinks } from './components/SocialLinks';
 import { Toggle } from './components/Toggle';
 import { useSettings } from './hooks/useSettings';
 
@@ -77,10 +78,21 @@ const App = () => {
         </section>
       </main>
 
-      <footer className="mt-auto flex items-center justify-between border-t border-brand-light/80 px-5 py-3">
-        <span className="text-[11px] text-brand-dark/60">
-          v1.0.0 · Made with care
-        </span>
+      <footer className="mt-auto border-t border-brand-light/80 px-5 py-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-col gap-1">
+            <span className="text-[11px] text-brand-dark/60">
+              v1.0.0 · Made with care
+            </span>
+            <a
+              href="mailto:hello@tablexport.com"
+              className="w-fit max-w-full truncate text-[11px] font-medium text-brand-dark/55 underline decoration-brand-dark/25 underline-offset-2 transition-colors hover:text-brand hover:decoration-brand/50"
+            >
+              hello@tablexport.com
+            </a>
+          </div>
+          <SocialLinks />
+        </div>
       </footer>
     </div>
   );

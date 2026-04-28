@@ -1,5 +1,6 @@
-export const DASHBOARD_URL = 'https://tablexport.com/';
-export const AUTO_PASTE_URL = 'https://tablexport.com?autoPaste=true';
+export const DASHBOARD_URL = 'https://tablexport.com/?exportSource=extension';
+export const AUTO_PASTE_URL =
+  'https://tablexport.com?autoPaste=true&exportSource=extension';
 
 export const EXPORT_BUTTON_ATTR = 'data-tablexport-bridge-button';
 export const BATCH_EXPORT_BUTTON_ATTR = 'data-tablexport-bridge-batch-button';
