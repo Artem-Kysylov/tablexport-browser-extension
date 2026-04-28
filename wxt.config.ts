@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 const EXTENSION_NAME = 'TableXport: AI Table Extractor';
 const EXTENSION_DESCRIPTION =
   'Export tables from ChatGPT, Claude, Gemini, and DeepSeek to Excel or Google Sheets in one click.';
-const EXTENSION_VERSION = '1.0.0';
+const EXTENSION_VERSION = '1.0.1';
 
 const PERMISSIONS = ['storage', 'tabs', 'activeTab', 'clipboardWrite'] as const;
 
